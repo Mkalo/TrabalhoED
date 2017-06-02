@@ -34,10 +34,7 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	Graph* graph = graph_create(orientado);
-	for (int i = 1; i <= tamanho; i++) {
-		graph_insert_node(graph, i);
-	}
+	Graph* graph = graph_create(tamanho, orientado);
 
 	// Ler arestas
 	int a, b;
@@ -47,6 +44,8 @@ int main(int argc, char** argv) {
 
 	fclose(file);
 
+
+	printf("Connected sets: %d\n", graph_connected_sets(graph));
 	graph_print(graph);
 	graph_free(graph);
 	return 0;
