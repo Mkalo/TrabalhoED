@@ -29,6 +29,20 @@ List* list_find(List* list, int id) {
 	}
 }
 
+List* list_remove(List* list, int id) {
+	List* before = NULL;
+	List* it = list;
+	while ((it) && it->id != id) {
+		before = it;
+		it = it->next;
+	}
+	if (!it) return list;
+	if (!before) list = list->next;
+	else before->next = it->next;
+	free(it);
+	return list;
+}
+
 void list_free(List* list) {
 	if (list) {
 		list_free(list->next);

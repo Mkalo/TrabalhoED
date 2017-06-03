@@ -44,9 +44,14 @@ int main(int argc, char** argv) {
 
 	fclose(file);
 
-
-	printf("Connected sets: %d\n", graph_connected_sets(graph));
-	graph_print(graph);
+	int connectedSets = graph_connected_sets(graph);
+	if (connectedSets == 1) {
+		printf("O grafo eh conexo e suas pontes sao:\n");
+		graph_print_bridges(graph);
+	} else {
+		printf("O grafo nao eh conexo e suas componentes conexas sao:\n");
+		graph_print_connected_sets(graph);
+	}
 	graph_free(graph);
 	return 0;
 }

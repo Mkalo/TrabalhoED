@@ -15,13 +15,16 @@ Node* graph_find_node(Graph*, int id);
 List* graph_find_edge(Graph* graph, int id, int neighbour);
 void graph_insert_node(Graph* graph, int id);
 void graph_add_edge(Graph* graph, int id, int neighbour);
-void graph_remove_edge(Graph graph, int id);
-int graph_vertices(Graph* graph);
+void graph_remove_edge(Graph* graph, int id, int neighbour);
+Graph* graph_copy(Graph* graph);
 void graph_free(Graph* graph);
 void graph_print(Graph* graph);
 
 // Methods to solve the problem
 void graph_dfs_visit(Graph* graph, int* visited, int id);
+void graph_dfs_visit_print(Graph* graph, int* visited, int id);
 int graph_connected_sets(Graph* graph);
+void graph_print_connected_sets(Graph* graph);
+void graph_print_bridges(Graph* graph);
 
 #endif
