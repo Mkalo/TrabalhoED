@@ -115,7 +115,7 @@ List* graph_dfs_visit_print(Graph* graph, List* visited, int id) {
 	return visited;
 }
 
-int graph_connected_sets(Graph* graph) {
+int graph_connected_components(Graph* graph) {
 	if (!graph->direction) return 0;
 
 	List* visited = list_create();
@@ -132,7 +132,7 @@ int graph_connected_sets(Graph* graph) {
 	return groups;
 }
 
-void graph_print_connected_sets(Graph* graph) {
+void graph_print_connected_components(Graph* graph) {
 	if (!graph->direction) return;
 
 	List* visited = list_create();
@@ -152,7 +152,7 @@ void graph_print_bridges(Graph* graph) {
 
 	Graph* copy = graph_copy(graph);
 	List* visited = list_create();
-	int components = graph_connected_sets(graph);
+	int components = graph_connected_components(graph);
 
 	for (Node* it = graph->root; it != NULL; it = it->next) {
 		visited = list_insert_begin_unique(visited, it->id);
@@ -161,7 +161,7 @@ void graph_print_bridges(Graph* graph) {
 			int a = it->id, b = it2->id;
 			if (!list_find(visited, b)) {
 				graph_remove_edge(copy, a, b);
-				if (graph_connected_sets(copy) > components) {
+				if (graph_connected_components(copy) > components) {
 					printf("%d %d\n", a, b);
 				}
 				graph_add_edge(copy, a, b);
@@ -176,16 +176,20 @@ void graph_print_bridges(Graph* graph) {
 void graph_print_art_vertices(Graph* graph) {
 	if (!graph->direction) return;
 
-	int components = graph_connected_sets(graph);
+	int components = graph_connected_components(graph);
 
 	for (Node* it = graph->root; it != NULL; it = it->next) {
 		Graph* copy = graph_copy(graph);
 		graph_remove_node(copy, it->id);
-		if (graph_connected_sets(copy) > components) {
+		if (graph_connected_components(copy) > components) {
 			printf("%d ", it->id);	
 		}
 		graph_free(copy);
 	}
 
 	printf("\n");
+}
+
+void graph_print_strongly_connected_components(Graph* graph) {
+	// TODO: Implementar algoritmo de Kosaraju utilizando DFS e Topological Sort.
 }

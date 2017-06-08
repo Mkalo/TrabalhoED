@@ -27,12 +27,12 @@ List* graph_dfs_visit(Graph* graph, List* visited, int id);
 List* graph_dfs_visit_print(Graph* graph, List* visited, int id);
 
 // Funções somente para grafo não orientado
-int graph_connected_sets(Graph* graph);
-void graph_print_connected_sets(Graph* graph);
+int graph_connected_components(Graph* graph);
+void graph_print_connected_components(Graph* graph);
 void graph_print_bridges(Graph* graph);
 void graph_print_art_vertices(Graph* graph);
 
 // Funções somente para grafo orientado
-// TODO
+void graph_print_strongly_connected_components(Graph* graph);
 
 #endif

@@ -40,10 +40,12 @@ int main(int argc, char** argv) {
 	// Update na orientação de acordo com as arestas.
 	graph->direction = graph_find_direction(graph);
 
+	// TODO: Implementar menu para inserção, remoção e busca.
+
 	if (graph->direction) {
 		printf("O grafo não é orientado.\n");
 		
-		int connectedSets = graph_connected_sets(graph);
+		int connectedSets = graph_connected_components(graph);
 		if (connectedSets == 1) {
 			printf("O grafo é conexo.\nSuas pontes são:\n");
 			graph_print_bridges(graph);
@@ -51,11 +53,11 @@ int main(int argc, char** argv) {
 			graph_print_art_vertices(graph);
 		} else {
 			printf("O grafo não é conexo.\nSuas componentes são:\n");
-			graph_print_connected_sets(graph);
+			graph_print_connected_components(graph);
 		}
 	} else {
 		printf("O grafo é orientado.\n");
-		// TODO
+		graph_print_strongly_connected_components(graph);
 	}
 
 	graph_free(graph);
