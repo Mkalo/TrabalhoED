@@ -28,7 +28,28 @@ Node* node_insert(Node* node, int id) {
 	return head;
 }
 
-Node* node_add_edge(Node* node, int id, int neighbour) {
+Node* node_remove(Node* node, int id) {
+	Node* it = node, *ant = NULL;
+	while (it && it->id != id) {
+		ant = it;
+		it = it->next;
+	}
+
+	if (!it) return node;
+	
+	if (ant) {
+		ant->next = it->next;
+	} else {
+		node = it->next;
+	}
+	
+	it->next = NULL;
+	node_free(it);
+
+	return node;
+}
+
+Node* node_add_neighbour(Node* node, int id, int neighbour) {
 	Node* f = node_find(node, id);
 	if (!f) {
 		node = node_insert(node, id);

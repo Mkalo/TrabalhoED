@@ -26,15 +26,8 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-	// Ler orientaçao do grafo
-	int orientado;
-	if (fscanf(file, "%d ", &orientado) != 1) {
-		printf("Failed to read graph orientation from file.\n");
-		fclose(file);
-		return 1;
-	}
-
-	Graph* graph = graph_create(tamanho, orientado);
+	// Assumir que o grafo é orientado
+	Graph* graph = graph_create(tamanho, 0);
 
 	// Ler arestas
 	int a, b;
@@ -44,14 +37,27 @@ int main(int argc, char** argv) {
 
 	fclose(file);
 
-	int connectedSets = graph_connected_sets(graph);
-	if (connectedSets == 1) {
-		printf("O grafo eh conexo e suas pontes sao:\n");
-		graph_print_bridges(graph);
+	// Update na orientação de acordo com as arestas.
+	graph->direction = graph_find_direction(graph);
+
+	if (graph->direction) {
+		printf("O grafo não é orientado.\n");
+		
+		int connectedSets = graph_connected_sets(graph);
+		if (connectedSets == 1) {
+			printf("O grafo é conexo.\nSuas pontes são:\n");
+			graph_print_bridges(graph);
+			printf("Seus vertices de articulação:\n");
+			graph_print_art_vertices(graph);
+		} else {
+			printf("O grafo não é conexo.\nSuas componentes são:\n");
+			graph_print_connected_sets(graph);
+		}
 	} else {
-		printf("O grafo nao eh conexo e suas componentes conexas sao:\n");
-		graph_print_connected_sets(graph);
+		printf("O grafo é orientado.\n");
+		// TODO
 	}
+
 	graph_free(graph);
 	return 0;
 }
