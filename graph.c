@@ -58,6 +58,7 @@ void graph_remove_edge(Graph* graph, int id, int neighbour) {
 Graph* graph_copy(Graph* graph) {
 	Graph* ret = graph_create(0, 0);
 	for (Node* it = graph->root; it != NULL; it = it->next) {
+		graph_insert_node(ret, it->id);
 		for (List* it2 = it->neighbours; it2 != NULL; it2 = it2->next) {
 			graph_add_edge(ret, it->id, it2->id);
 		}
@@ -88,31 +89,29 @@ int graph_find_direction(Graph* graph) {
 
 //
 
-List* graph_dfs_visit(Graph* graph, List* visited, int id) {
+void graph_dfs_visit(Graph* graph, List** visited, int id) {
 	Node* node = graph_find_node(graph, id);
-	if (!node) return visited;
+	if (!node) return;
 
-	visited = list_insert_begin_unique(visited, id);
+	*visited = list_insert_begin_unique(*visited, id);
 	for (List* it = node->neighbours; it != NULL; it = it->next) {
-		if (!list_find(visited, it->id)) {
-			visited = graph_dfs_visit(graph, visited, it->id);
+		if (!list_find(*visited, it->id)) {
+			graph_dfs_visit(graph, visited, it->id);
 		}
 	}
-	return visited;
 }
 
-List* graph_dfs_visit_print(Graph* graph, List* visited, int id) {
+void graph_dfs_visit_print(Graph* graph, List** visited, int id) {
 	Node* node = graph_find_node(graph, id);
-	if (!node) return visited;
+	if (!node) return;
 
-	visited = list_insert_begin_unique(visited, id);
+	*visited = list_insert_begin_unique(*visited, id);
 	printf("%d ", id);
 	for (List* it = node->neighbours; it != NULL; it = it->next) {
-		if (!list_find(visited, it->id)) {
-			visited = graph_dfs_visit(graph, visited, it->id);
+		if (!list_find(*visited, it->id)) {
+			graph_dfs_visit_print(graph, visited, it->id);
 		}
 	}
-	return visited;
 }
 
 int graph_connected_components(Graph* graph) {
@@ -123,7 +122,7 @@ int graph_connected_components(Graph* graph) {
 	int groups = 0;
 	for (Node* it = graph->root; it != NULL; it = it->next) {
 		if (!list_find(visited, it->id)) {
-			visited = graph_dfs_visit(graph, visited, it->id);
+			graph_dfs_visit(graph, &visited, it->id);
 			groups++;
 		}
 	}
@@ -139,7 +138,7 @@ void graph_print_connected_components(Graph* graph) {
 
 	for (Node* it = graph->root; it != NULL; it = it->next) {
 		if (!list_find(visited, it->id)) {
-			visited = graph_dfs_visit_print(graph, visited, it->id);
+			graph_dfs_visit_print(graph, &visited, it->id);
 			printf("\n");
 		}
 	}

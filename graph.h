@@ -23,8 +23,8 @@ void graph_print(Graph* graph);
 int graph_find_direction(Graph* graph);
 
 // Funções para resolver o problema
-List* graph_dfs_visit(Graph* graph, List* visited, int id);
-List* graph_dfs_visit_print(Graph* graph, List* visited, int id);
+void graph_dfs_visit(Graph* graph, List** visited, int id);
+void graph_dfs_visit_print(Graph* graph, List** visited, int id);
 
 // Funções somente para grafo não orientado
 int graph_connected_components(Graph* graph);
