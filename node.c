@@ -59,15 +59,6 @@ Node* node_add_neighbour(Node* node, int id, int neighbour) {
 	return node;
 }
 
-int node_length(Node* node) {
-	int ret = 0;
-	while (node) {
-		node = node->next;
-		ret++;
-	}
-	return ret;
-}
-
 void node_free(Node* node) {
 	if (node) {
 		node_free(node->next);

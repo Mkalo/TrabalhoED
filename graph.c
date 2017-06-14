@@ -67,6 +67,18 @@ Graph* graph_copy(Graph* graph) {
 	return ret;
 }
 
+Graph* graph_transpose_copy(Graph* graph) {
+	Graph* ret = graph_create(0, 0);
+	for (Node* it = graph->root; it != NULL; it = it->next) {
+		graph_insert_node(ret, it->id);
+		for (List* it2 = it->neighbours; it2 != NULL; it2 = it2->next) {
+			graph_add_edge(ret, it2->id, it->id);
+		}
+	}
+	ret->direction = graph->direction;
+	return ret;
+}
+
 void graph_free(Graph* graph) {
 	node_free(graph->root);
 	free(graph);
@@ -87,7 +99,7 @@ int graph_find_direction(Graph* graph) {
 	return 1;
 }
 
-//
+// Funções para resolver o problema
 
 void graph_dfs_visit(Graph* graph, List** visited, int id) {
 	Node* node = graph_find_node(graph, id);
@@ -177,18 +189,74 @@ void graph_print_art_vertices(Graph* graph) {
 
 	int components = graph_connected_components(graph);
 
+	Graph* copy = graph_copy(graph);
+
 	for (Node* it = graph->root; it != NULL; it = it->next) {
-		Graph* copy = graph_copy(graph);
+		List* aux = list_create();
+
+		for (List* it2 = it->neighbours; it2 != NULL; it2 = it2->next) {
+			aux = list_insert_begin(aux, it2->id);
+		}
+
 		graph_remove_node(copy, it->id);
 		if (graph_connected_components(copy) > components) {
 			printf("%d ", it->id);	
 		}
-		graph_free(copy);
+
+		for (List* it2 = aux; it2 != NULL; it2 = it2->next) {
+			graph_add_edge(copy, it->id, it2->id);
+		}
+
+		list_free(aux);
 	}
 
+	graph_free(copy);
 	printf("\n");
 }
 
+void graph_dfs_topo_sort(Graph* graph, List** visited, List** stack, int id) {
+	Node* node = graph_find_node(graph, id);
+	if (!node) return;
+
+	*visited = list_insert_begin_unique(*visited, id);
+	for (List* it = node->neighbours; it != NULL; it = it->next) {
+		if (!list_find(*visited, it->id)) {
+			graph_dfs_topo_sort(graph, visited, stack, it->id);
+		}
+	}
+	*stack = list_insert_begin_unique(*stack, id);
+}
+
+List* graph_topo_sort(Graph* graph) {
+	List* visited = list_create();
+	List* stack = list_create();
+
+	for (Node* it = graph->root; it != NULL; it = it->next) {
+		if (!list_find(visited, it->id)) {
+			graph_dfs_topo_sort(graph, &visited, &stack, it->id);
+		}
+	}
+
+	list_free(visited);
+	return stack;
+}
+
 void graph_print_strongly_connected_components(Graph* graph) {
-	// TODO: Implementar algoritmo de Kosaraju utilizando DFS e Topological Sort.
+	if (graph->direction) return;
+
+	List* order = graph_topo_sort(graph);
+	List* visited = list_create();
+
+	Graph* transpose = graph_transpose_copy(graph);
+
+	for (List* it = order; it != NULL; it = it->next) {
+		if (!list_find(visited, it->id)) {
+			graph_dfs_visit_print(transpose, &visited, it->id);
+			printf("\n");
+		}
+	}
+
+	graph_free(transpose);
+	list_free(visited);
+	list_free(order);
 }

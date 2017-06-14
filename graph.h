@@ -18,6 +18,7 @@ void graph_remove_node(Graph* graph, int id);
 void graph_add_edge(Graph* graph, int id, int neighbour);
 void graph_remove_edge(Graph* graph, int id, int neighbour);
 Graph* graph_copy(Graph* graph);
+Graph* graph_transpose_copy(Graph* graph);
 void graph_free(Graph* graph);
 void graph_print(Graph* graph);
 int graph_find_direction(Graph* graph);
@@ -34,5 +35,7 @@ void graph_print_art_vertices(Graph* graph);
 
 // Funções somente para grafo orientado
 void graph_print_strongly_connected_components(Graph* graph);
+void graph_dfs_topo_sort(Graph* graph, List** visited, List** stack, int id);
+List* graph_topo_sort(Graph* graph);
 
 #endif
