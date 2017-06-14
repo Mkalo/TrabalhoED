@@ -157,6 +157,22 @@ void menu_find_edge(Graph* graph) {
 	}
 }
 
+void menu_set_direction(Graph* graph) {
+	printf("Inform the orientation for the graph (0 - directed, 1 - undirected): ");
+	int a = -1;
+	if (scanf("%d", &a) == 1 && (a == 0 || a == 1)) {
+		if (a == 1 && graph_find_direction(graph) != 1) {
+			printf("This graph cannot be changed to undirected. For every edge (u v) there must be an edge (v u)\n");
+			return;
+		}
+		graph->direction = a;
+		printf("Graph orientation updated!\n");
+	} else {
+		printf("Invalid input\n");
+		exit(1);
+	}
+}
+
 void execute_menu(Graph* graph, const menu_function* menu, const char** names, int size) {
 	printf("-------------------------------------------------------\n");
 	for (int i = 0; i < size; i++) {
@@ -185,10 +201,10 @@ int main(int argc, char** argv) {
 		graph = graph_create(0, 0);
 	}
 
-	const menu_function menu[8] = {menu_print_graph, menu_insert_node, menu_remove_node, menu_find_node, menu_insert_edge, menu_remove_edge, menu_find_edge, menu_special_function};
-	const char* names[8] = {"Print graph", "Insert node", "Remove node", "Find node", "Insert edge", "Remove edge", "Find edge", "Special function"}; 
+	const menu_function menu[9] = {menu_special_function, menu_print_graph, menu_insert_node, menu_remove_node, menu_find_node, menu_insert_edge, menu_remove_edge, menu_find_edge, menu_set_direction};
+	const char* names[9] = {"Special function", "Print graph", "Insert node", "Remove node", "Find node", "Insert edge", "Remove edge", "Find edge", "Change orientation"}; 
 	
-	execute_menu(graph, menu, names, 8);
+	execute_menu(graph, menu, names, 9);
 	
 	graph_free(graph);
 	return 0;
