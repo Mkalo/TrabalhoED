@@ -13,11 +13,11 @@ Graph* graph_create(int nodes, int direction) {
 	return graph;
 }
 
-Node* graph_find_node(Graph* graph, int id) {
+Node* graph_find_node(const Graph* graph, int id) {
 	return node_find(graph->root, id);
 }
 
-List* graph_find_edge(Graph* graph, int id, int neighbour) {
+List* graph_find_edge(const Graph* graph, int id, int neighbour) {
 	Node* node = graph_find_node(graph, id);
 	if (!node) return NULL;
 	return list_find(node->neighbours, neighbour);
@@ -55,7 +55,7 @@ void graph_remove_edge(Graph* graph, int id, int neighbour) {
 	node->neighbours = list_remove(node->neighbours, neighbour);
 }
 
-Graph* graph_copy(Graph* graph) {
+Graph* graph_copy(const Graph* graph) {
 	Graph* ret = graph_create(0, 0);
 	for (Node* it = graph->root; it != NULL; it = it->next) {
 		graph_insert_node(ret, it->id);
@@ -67,7 +67,7 @@ Graph* graph_copy(Graph* graph) {
 	return ret;
 }
 
-Graph* graph_transpose_copy(Graph* graph) {
+Graph* graph_transpose_copy(const Graph* graph) {
 	Graph* ret = graph_create(0, 0);
 	for (Node* it = graph->root; it != NULL; it = it->next) {
 		graph_insert_node(ret, it->id);
@@ -84,11 +84,11 @@ void graph_free(Graph* graph) {
 	free(graph);
 }
 
-void graph_print(Graph* graph) {
+void graph_print(const Graph* graph) {
 	node_print(graph->root);
 }
 
-int graph_find_direction(Graph* graph) {
+int graph_find_direction(const Graph* graph) {
 	for (Node* it = graph->root; it != NULL; it = it->next) {
 		for (List* it2 = it->neighbours; it2 != NULL; it2 = it2->next) {
 			if (!graph_find_edge(graph, it2->id, it->id)) {
@@ -101,7 +101,7 @@ int graph_find_direction(Graph* graph) {
 
 // Funções para resolver o problema
 
-void graph_dfs_visit(Graph* graph, List** visited, int id) {
+void graph_dfs_visit(const Graph* graph, List** visited, int id) {
 	Node* node = graph_find_node(graph, id);
 	if (!node) return;
 
@@ -113,7 +113,7 @@ void graph_dfs_visit(Graph* graph, List** visited, int id) {
 	}
 }
 
-void graph_dfs_visit_print(Graph* graph, List** visited, int id) {
+void graph_dfs_visit_print(const Graph* graph, List** visited, int id) {
 	Node* node = graph_find_node(graph, id);
 	if (!node) return;
 
@@ -126,7 +126,7 @@ void graph_dfs_visit_print(Graph* graph, List** visited, int id) {
 	}
 }
 
-int graph_connected_components(Graph* graph) {
+int graph_connected_components(const Graph* graph) {
 	if (!graph->direction) return 0;
 
 	List* visited = list_create();
@@ -143,13 +143,15 @@ int graph_connected_components(Graph* graph) {
 	return groups;
 }
 
-void graph_print_connected_components(Graph* graph) {
+void graph_print_connected_components(const Graph* graph) {
 	if (!graph->direction) return;
 
 	List* visited = list_create();
 
+	int counter = 0;
 	for (Node* it = graph->root; it != NULL; it = it->next) {
 		if (!list_find(visited, it->id)) {
+			printf("Component %d: ", ++counter);
 			graph_dfs_visit_print(graph, &visited, it->id);
 			printf("\n");
 		}
@@ -158,7 +160,7 @@ void graph_print_connected_components(Graph* graph) {
 	list_free(visited);
 }
 
-void graph_print_bridges(Graph* graph) {
+void graph_print_bridges(const Graph* graph) {
 	if (!graph->direction) return;
 
 	Graph* copy = graph_copy(graph);
@@ -184,7 +186,7 @@ void graph_print_bridges(Graph* graph) {
 	graph_free(copy);
 }
 
-void graph_print_art_vertices(Graph* graph) {
+void graph_print_art_vertices(const Graph* graph) {
 	if (!graph->direction) return;
 
 	int components = graph_connected_components(graph);
@@ -192,29 +194,20 @@ void graph_print_art_vertices(Graph* graph) {
 	Graph* copy = graph_copy(graph);
 
 	for (Node* it = graph->root; it != NULL; it = it->next) {
-		List* aux = list_create();
-
-		for (List* it2 = it->neighbours; it2 != NULL; it2 = it2->next) {
-			aux = list_insert_begin(aux, it2->id);
-		}
-
 		graph_remove_node(copy, it->id);
 		if (graph_connected_components(copy) > components) {
 			printf("%d ", it->id);	
 		}
-
-		for (List* it2 = aux; it2 != NULL; it2 = it2->next) {
+		for (List* it2 = it->neighbours; it2 != NULL; it2 = it2->next) {
 			graph_add_edge(copy, it->id, it2->id);
 		}
-
-		list_free(aux);
 	}
 
 	graph_free(copy);
 	printf("\n");
 }
 
-void graph_dfs_topo_sort(Graph* graph, List** visited, List** stack, int id) {
+void graph_dfs_topo_sort(const Graph* graph, List** visited, List** stack, int id) {
 	Node* node = graph_find_node(graph, id);
 	if (!node) return;
 
@@ -227,7 +220,7 @@ void graph_dfs_topo_sort(Graph* graph, List** visited, List** stack, int id) {
 	*stack = list_insert_begin_unique(*stack, id);
 }
 
-List* graph_topo_sort(Graph* graph) {
+List* graph_topo_sort(const Graph* graph) {
 	List* visited = list_create();
 	List* stack = list_create();
 
@@ -241,7 +234,7 @@ List* graph_topo_sort(Graph* graph) {
 	return stack;
 }
 
-void graph_print_strongly_connected_components(Graph* graph) {
+void graph_print_strongly_connected_components(const Graph* graph) {
 	if (graph->direction) return;
 
 	List* order = graph_topo_sort(graph);
@@ -249,8 +242,10 @@ void graph_print_strongly_connected_components(Graph* graph) {
 
 	Graph* transpose = graph_transpose_copy(graph);
 
+	int counter = 0;
 	for (List* it = order; it != NULL; it = it->next) {
 		if (!list_find(visited, it->id)) {
+			printf("Component %d: ", ++counter);
 			graph_dfs_visit_print(transpose, &visited, it->id);
 			printf("\n");
 		}

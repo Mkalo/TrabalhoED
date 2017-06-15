@@ -50,7 +50,7 @@ void list_free(List* list) {
 	}
 }
 
-void list_print(List* list) {
+void list_print(const List* list) {
 	if (list) {
 		printf("%d", list->id);
 		if (list->next) printf(", ");

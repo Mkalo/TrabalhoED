@@ -67,9 +67,9 @@ void node_free(Node* node) {
 	}
 }
 
-void node_print(Node* node) {
+void node_print(const Node* node) {
 	if (node) {
-		printf("ID: %d, Neighbours:", node->id);
+		printf("ID: %d, Neighbours: ", node->id);
 		list_print(node->neighbours);
 		node_print(node->next);
 	}

@@ -15,6 +15,6 @@ Node* node_insert(Node* node, int id);
 Node* node_remove(Node* node, int id);
 Node* node_add_neighbour(Node* node, int id, int neighbour);
 void node_free(Node* node);
-void node_print(Node* node);
+void node_print(const Node* node);
 
 #endif
