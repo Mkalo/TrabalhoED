@@ -55,11 +55,6 @@ void graph_print_art_vertices(const Graph* graph);
 
 // Funções somente para grafo orientado
 
-// Algoritmo de Kosaraju. Primeiro é feita uma forward traverse para obter os nós em post-order
-// e depois uma backward traverse na ordem obtida para printar as componentes fortemente conexas.
-// A ordem é dada pela função graph_topo_sort e o backward traverse é uma DFS no grafo transposto (direção das arestas trocadas)
-void graph_print_strongly_connected_components(const Graph* graph);
-
 // Exatamente a mesma coisa que a função graph_dfs_visit porém ao terminar de visitar todos os vizinhos, insere o nó na
 // lista que serve como uma stack.
 void graph_dfs_topo_sort(const Graph* graph, List** visited, List** stack, int id);
@@ -68,5 +63,10 @@ void graph_dfs_topo_sort(const Graph* graph, List** visited, List** stack, int i
 // topo sort visto que o algoritmo é o mesmo do topological sort, porém só estamos interessados na
 // ordem post-order dos nós visto que o grafo poderia ter ciclos e deixaria de ser um topological sort.
 List* graph_topo_sort(const Graph* graph);
+
+// Algoritmo de Kosaraju. Primeiro é feita uma forward traverse para obter os nós em post-order
+// e depois uma backward traverse na ordem obtida para printar as componentes fortemente conexas.
+// A ordem é dada pela função graph_topo_sort e o backward traverse é uma DFS no grafo transposto (direção das arestas trocadas)
+void graph_print_strongly_connected_components(const Graph* graph);
 
 #endif
