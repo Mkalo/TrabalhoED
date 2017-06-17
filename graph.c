@@ -3,7 +3,7 @@
 
 #include "graph.h"
 
-Graph* graph_create(int nodes, int direction) {
+Graph* graph_create(int nodes, enum direction_t direction) {
 	Graph* graph = (Graph*) malloc(sizeof(Graph));
 	graph->direction = direction;
 	graph->root = node_create();
@@ -37,7 +37,7 @@ void graph_remove_node(Graph* graph, int id) {
 void graph_add_edge(Graph* graph, int id, int neighbour) {
 	graph->root = node_add_neighbour(graph->root, id, neighbour);
 
-	if (graph->direction) {
+	if (graph->direction == UNDIRECTED) {
 		graph->root = node_add_neighbour(graph->root, neighbour, id);
 	} else {
 		graph_insert_node(graph, neighbour);
@@ -49,7 +49,7 @@ void graph_remove_edge(Graph* graph, int id, int neighbour) {
 	Node* node2 = graph_find_node(graph, neighbour);
 	if (!node || !node2) return;
 
-	if (graph->direction) {
+	if (graph->direction == UNDIRECTED) {
 		node2->neighbours = list_remove(node2->neighbours, id);
 	}
 	node->neighbours = list_remove(node->neighbours, neighbour);
@@ -88,15 +88,49 @@ void graph_print(const Graph* graph) {
 	node_print(graph->root);
 }
 
-int graph_find_direction(const Graph* graph) {
+enum direction_t graph_find_direction(const Graph* graph) {
 	for (Node* it = graph->root; it != NULL; it = it->next) {
 		for (List* it2 = it->neighbours; it2 != NULL; it2 = it2->next) {
 			if (!graph_find_edge(graph, it2->id, it->id)) {
-				return 0;
+				return DIRECTED;
 			}
 		}
 	}
-	return 1;
+	return UNDIRECTED;
+}
+
+Graph* read_graph_from_file(const char* dir) {
+	// Abrir arquivo informado
+	FILE* file = fopen(dir, "r");
+	
+	if (!file) {
+		printf("Couldn't open file.\n");
+		return NULL;
+	}
+
+	// Ler tamanho do grafo do arquivo
+	int tamanho;
+	if (fscanf(file, "%d ", &tamanho) != 1) {
+		printf("Failed to read graph size from file.\n");
+		fclose(file);
+		return NULL;
+	}
+
+	// Assumir que o grafo é orientado
+	Graph* graph = graph_create(tamanho, DIRECTED);
+
+	// Ler arestas
+	int a, b;
+	while (fscanf(file, "%d %d ", &a, &b) == 2) {
+		graph_add_edge(graph, a, b);
+	}
+
+	fclose(file);
+
+	// Update na orientação de acordo com as arestas.
+	graph->direction = graph_find_direction(graph);
+
+	return graph;
 }
 
 // Funções para resolver o problema
@@ -127,7 +161,7 @@ void graph_dfs_visit_print(const Graph* graph, List** visited, int id) {
 }
 
 int graph_connected_components(const Graph* graph) {
-	if (!graph->direction) return 0;
+	if (graph->direction == DIRECTED) return 0;
 
 	List* visited = list_create();
 
@@ -144,7 +178,7 @@ int graph_connected_components(const Graph* graph) {
 }
 
 void graph_print_connected_components(const Graph* graph) {
-	if (!graph->direction) return;
+	if (graph->direction == DIRECTED) return;
 
 	List* visited = list_create();
 
@@ -161,7 +195,7 @@ void graph_print_connected_components(const Graph* graph) {
 }
 
 void graph_print_bridges(const Graph* graph) {
-	if (!graph->direction) return;
+	if (graph->direction == DIRECTED) return;
 
 	Graph* copy = graph_copy(graph);
 	List* visited = list_create();
@@ -187,7 +221,7 @@ void graph_print_bridges(const Graph* graph) {
 }
 
 void graph_print_art_vertices(const Graph* graph) {
-	if (!graph->direction) return;
+	if (graph->direction == DIRECTED) return;
 
 	int components = graph_connected_components(graph);
 
@@ -235,7 +269,7 @@ List* graph_topo_sort(const Graph* graph) {
 }
 
 void graph_print_strongly_connected_components(const Graph* graph) {
-	if (graph->direction) return;
+	if (graph->direction == UNDIRECTED) return;
 
 	List* order = graph_topo_sort(graph);
 	List* visited = list_create();

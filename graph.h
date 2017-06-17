@@ -6,11 +6,13 @@
 
 typedef struct Graph {
 	Node* root;
-	// 0 = directed, 1 = undirected
-	int direction;
+	enum direction_t {
+		DIRECTED = 0,
+		UNDIRECTED = 1
+	} direction;
 } Graph;
 
-Graph* graph_create(int size, int direction);
+Graph* graph_create(int size, enum direction_t direction);
 Node* graph_find_node(const Graph*, int id);
 List* graph_find_edge(const Graph* graph, int id, int neighbour);
 void graph_insert_node(Graph* graph, int id);
@@ -21,7 +23,8 @@ Graph* graph_copy(const Graph* graph);
 Graph* graph_transpose_copy(const Graph* graph);
 void graph_free(Graph* graph);
 void graph_print(const Graph* graph);
-int graph_find_direction(const Graph* graph);
+enum direction_t graph_find_direction(const Graph* graph);
+Graph* read_graph_from_file(const char* dir);
 
 // Funções para resolver o problema
 
