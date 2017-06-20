@@ -151,6 +151,6 @@ void execute_menu(Graph* graph, const menu_function* menu, const char** names, i
 
 		printf("-------------------------------------------------------\n");
 		menu[op](graph);
-		execute_menu(graph, menu, names, size);
+		return execute_menu(graph, menu, names, size);
 	}
 }
